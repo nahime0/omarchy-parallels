@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/omarchy-mark.png" alt="Omarchy logo" width="120">
+</p>
+
 <h1 align="center">Omarchy on Parallels</h1>
 
 <p align="center">
