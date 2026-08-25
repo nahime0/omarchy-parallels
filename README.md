@@ -9,10 +9,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Apple_Silicon-ARM64-000000?style=flat-square&logo=apple&logoColor=white" alt="Apple Silicon ARM64">
-  <img src="https://img.shields.io/badge/Parallels_Desktop-26.4.1-000000?style=flat-square&logo=parallels&logoColor=white" alt="Parallels Desktop 26.4.1">
-  <img src="https://img.shields.io/badge/Omarchy_MX_Mac-4.0.0--mac.11-000000?style=flat-square&logo=archlinux&logoColor=white" alt="Omarchy MX Mac 4.0.0-mac.11">
-  <img src="https://img.shields.io/badge/Hyprland-0.56.1-000000?style=flat-square&logo=hyprland&logoColor=white" alt="Hyprland 0.56.1">
+  <img src="https://img.shields.io/badge/Apple_Silicon-ARM64-9ECE6A?style=flat-square&logo=apple&logoColor=white" alt="Apple Silicon ARM64">
+  <img src="https://img.shields.io/badge/Parallels_Desktop-26.4.1-9ECE6A?style=flat-square&logo=parallels&logoColor=white" alt="Parallels Desktop 26.4.1">
+  <img src="https://img.shields.io/badge/Omarchy_MX_Mac-4.0.0--mac.11-9ECE6A?style=flat-square&logo=archlinux&logoColor=white" alt="Omarchy MX Mac 4.0.0-mac.11">
+  <img src="https://img.shields.io/badge/Hyprland-0.56.1-9ECE6A?style=flat-square&logo=hyprland&logoColor=white" alt="Hyprland 0.56.1">
 </p>
 
 <p align="center">
