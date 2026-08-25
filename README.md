@@ -25,6 +25,13 @@
 
 ---
 
+> [!TIP]
+> **Preconfigured template:** [Download it from Google Drive](https://drive.google.com/file/d/15PJMQ7fadooj_Hgonk4FX7B-34qD5GAO/view?usp=drive_link).
+>
+> - Username: `omarchy`
+> - Password: `omarchy`
+> - Root password: `omarchy`
+
 ## Read this first
 
 This is a tested VM adaptation, not an officially supported Omarchy installation path.
