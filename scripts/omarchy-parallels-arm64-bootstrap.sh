@@ -6,7 +6,9 @@ LOG=/root/omarchy-vm-install.log
 STATE=/root/omarchy-vm-install.state
 WORK=/root/omarchy-vm-setup
 FINGERPRINT=5983B1CA32CB778F4D74D24ECFF35022CA5B5959
-STABLE=https://github.com/maralcbr/omarchy-mx-mac/releases/latest/download
+# The key was last published as a standalone asset in this release. Its full
+# fingerprint remains the trust boundary for the current signed channel.
+RELEASE_KEY_URL=https://github.com/maralcbr/omarchy-mx-mac/releases/download/v4.0.0-mac.11/omarchy-release.gpg
 CHANNEL=https://github.com/maralcbr/omarchy-pkgs/releases/download/asahi-quattro-channel
 TARGET_USER=${OMARCHY_USER:-}
 TARGET_FULL_NAME=${OMARCHY_FULL_NAME:-${OMARCHY_USER:-}}
@@ -57,7 +59,7 @@ mkdir -p "$WORK/verified"
 cd "$WORK"
 
 curl --proto '=https' --tlsv1.2 --fail --location --retry 3 -o omarchy-release.gpg \
-  "$STABLE/omarchy-release.gpg"
+  "$RELEASE_KEY_URL"
 actual_fingerprint=$(gpg --batch --show-keys --with-colons omarchy-release.gpg |
   sed -n 's/^fpr:::::::::\([^:]*\):$/\1/p' | head -1)
 [[ $actual_fingerprint == "$FINGERPRINT" ]]
@@ -294,13 +296,14 @@ systemctl enable omarchy-firstboot-autologin-cleanup.service
 phase verify-installation
 [[ $(</usr/share/omarchy/version) == 4.* ]]
 [[ -f "$target_home/.local/state/omarchy/done/finalize-user" ]]
-for unit in NetworkManager.service sddm.service systemd-resolved.service; do
+# Omarchy keeps Docker access behind sudo/polkit instead of granting the
+# root-equivalent docker group by default, so verify its socket instead.
+for unit in NetworkManager.service docker.socket sddm.service systemd-resolved.service; do
   systemctl is-enabled --quiet "$unit"
 done
 pacman -Q omarchy-dev omarchy-settings-dev omarchy-nvim quickshell-git mise yay >/dev/null
 pacman -Qkk omarchy-dev | grep -Fq '0 altered files'
 [[ " $(id -nG "$TARGET_USER") " == *' wheel '* ]]
-[[ " $(id -nG "$TARGET_USER") " == *' docker '* ]]
 
 cat >"$STATE" <<EOF
 complete=yes
