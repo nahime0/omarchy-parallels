@@ -47,7 +47,6 @@ install -m 0755 /dev/stdin "$BRIDGE" <<'BRIDGE_SCRIPT'
 # Bridge the dynamic mode published by Parallels Tools to Hyprland.
 
 OUTPUT="Virtual-1"
-CONNECTOR="/sys/class/drm/card0-Virtual-1"
 CONFIG_FILE="$HOME/.config/hypr/monitors.lua"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy"
 SCALE_STATE="$STATE_DIR/parallels-monitor-scale"
@@ -78,12 +77,54 @@ find_hyprland_instance() {
   return 1
 }
 
+# simpledrm claims DRM minor 0 from the EFI framebuffer. virtio_gpu then
+# registers as the next minor, usually card1, and keeps that number after
+# simpledrm unbinds. Pick the connector that is publishing modes, preferring
+# the virtio GPU when more than one card exposes this output.
+discover_connector() {
+  local candidate card driver_path driver
+  local virtio_with_modes="" virtio="" with_modes="" any=""
+
+  for candidate in /sys/class/drm/card[0-9]*-"${OUTPUT}"; do
+    [[ -e $candidate && -r ${candidate}/modes ]] || continue
+    card=${candidate##*/}
+    card=${card%%-*}
+    driver_path=$(readlink -f "/sys/class/drm/${card}/device/driver" 2>/dev/null || true)
+    driver=${driver_path##*/}
+
+    if [[ $driver == virtio-pci || $driver == virtio_gpu ]]; then
+      [[ -z $virtio ]] && virtio=$candidate
+      if [[ -s ${candidate}/modes ]]; then
+        virtio_with_modes=$candidate
+        break
+      fi
+    elif [[ -s ${candidate}/modes ]]; then
+      [[ -z $with_modes ]] && with_modes=$candidate
+    else
+      [[ -z $any ]] && any=$candidate
+    fi
+  done
+
+  if [[ -n $virtio_with_modes ]]; then
+    printf '%s\n' "$virtio_with_modes"
+  elif [[ -n $with_modes ]]; then
+    printf '%s\n' "$with_modes"
+  elif [[ -n $virtio ]]; then
+    printf '%s\n' "$virtio"
+  elif [[ -n $any ]]; then
+    printf '%s\n' "$any"
+  else
+    return 1
+  fi
+}
+
 desired_mode() {
-  local mode width height
+  local mode width height connector
 
   mode=""
-  if [[ -r "$CONNECTOR/modes" ]]; then
-    IFS= read -r mode < "$CONNECTOR/modes" || true
+  connector=$(discover_connector || true)
+  if [[ -n $connector && -r $connector/modes ]]; then
+    IFS= read -r mode < "$connector/modes" || true
   fi
 
   if [[ $mode =~ ^([0-9]{3,5})x([0-9]{3,5})$ ]]; then
