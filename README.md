@@ -407,9 +407,11 @@ Confirm that Parallels Tools and the dynamic-resolution service are active:
 ```bash
 systemctl is-active prltoolsd
 systemctl --user is-active parallels-dynamic-resolution.service
-sed -n '1p' /sys/class/drm/card0-Virtual-1/modes
+awk 'NF { print; exit }' /sys/class/drm/card*-Virtual-1/modes
 hyprctl monitors all
 ```
+
+The virtio display is whichever `card*-Virtual-1` connector is publishing modes. simpledrm takes DRM minor 0 from the EFI framebuffer at boot, so the Parallels GPU is often `card1` and stays there after simpledrm exits.
 
 Restart only the user bridge if necessary:
 
@@ -425,7 +427,7 @@ Compare the Parallels request, DRM mode, and active Hyprland mode:
 
 ```bash
 tail -n 100 /var/log/parallels.log | grep 'NEW DYN RES' | tail -n 1
-sed -n '1p' /sys/class/drm/card0-Virtual-1/modes
+awk 'NF { print; exit }' /sys/class/drm/card*-Virtual-1/modes
 hyprctl monitors all
 ```
 
